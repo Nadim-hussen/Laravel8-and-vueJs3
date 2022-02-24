@@ -7,6 +7,7 @@
    <p><span>Title :  {{ arr.title}} </span> </p>
    <p><span>Description :  {{ arr.description}}</span> </p>
    <p><span>Category :  {{ arr.category}}</span> </p>
+    <img class="image" :src="`../storage/uploads/${arr.photo}`" alt="image">
    <button class="p-2 btn btn-dark" @click="home">Back</button>
             </div>
             </div>
@@ -55,4 +56,10 @@ export default {
 };
 </script>
 <style scoped>
+.image{
+    margin-top: 10px;
+    height: 200px;
+    width: 200px;
+    margin: 15px;
+}
 </style>

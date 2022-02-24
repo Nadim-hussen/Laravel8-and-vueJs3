@@ -9,4 +9,11 @@ class uploadimage extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $fillable = [
+        'email',
+        'title',
+        'description',
+        'category',
+        'photo'
+    ];
 }
