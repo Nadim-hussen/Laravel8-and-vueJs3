@@ -69,12 +69,29 @@ class PhotoController extends Controller
             'category'=>'required',
             'photo'=>'required'
         ]);
-        $data = uploadimage::find($request->id);
-        $data->title = $request->title;
-        $data->category = $request->category;
-        $data->email = $request->email;
-        $data->photo = $request->photo;
-        $data->description = $request->description;
-        $data->save();
+        $store =  uploadimage::where('id',$request->id)->first();
+        $path = public_path('storage/uploads/'.$store->photo);
+        if($request->file()){
+            if($store->photo == $request->photo){
+                $store->title = $request->title;
+                $store->category = $request->category;
+                $store->email = $request->email;
+                $store->description = $request->description;
+                $store->photo = $request->photo;
+                $store->save();
+            }else{
+                @unlink($path);
+                $file_name = time().'_'.$request->photo->getClientOriginalName();
+                $file_path = $request->file('photo')->storeAs('uploads',$file_name,'public');
+                $store->photo = time().'_'.$request->photo->getClientOriginalName();
+                $store->email = $request->email;
+                $store->title = $request->title;
+                $store->description = $request->description;
+                $store->category = $request->category;
+                $store->save();
+            }
+
+        }
+
     }
 }

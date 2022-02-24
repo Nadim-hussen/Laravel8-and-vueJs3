@@ -19833,6 +19833,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var _useCookies = (0,vue3_cookies__WEBPACK_IMPORTED_MODULE_2__.useCookies)(),
         cookies = _useCookies.cookies;
 
+    var file = (0,vue__WEBPACK_IMPORTED_MODULE_1__.ref)('');
     var route = (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.useRoute)();
     var arr = (0,vue__WEBPACK_IMPORTED_MODULE_1__.ref)([]);
     (0,vue__WEBPACK_IMPORTED_MODULE_1__.onMounted)(function () {
@@ -19872,27 +19873,62 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       };
     }();
 
+    var onChange = function onChange(e) {
+      file.value = e.target.files[0];
+    };
+
     var updateUser = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2(e) {
+        var config, data;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return axios.post("/api/updateUser", {
-                  id: arr.value.id,
-                  title: arr.value.title,
-                  category: arr.value.category,
-                  email: cookies.get("email"),
-                  photo: 'pic.png',
-                  description: arr.value.description
-                }).then(function () {
+                e.preventDefault();
+                config = {
+                  headers: {
+                    'content-type': 'multipart/form-data'
+                  }
+                };
+                data = new FormData();
+
+                if (!(file.value != '')) {
+                  _context2.next = 14;
+                  break;
+                }
+
+                data.append('id', arr.value.id);
+                data.append('title', arr.value.title);
+                data.append('category', arr.value.category);
+                data.append('email', arr.value.email);
+                data.append('photo', file.value);
+                data.append('description', arr.value.description);
+                _context2.next = 12;
+                return axios.post("/api/updateUser", data, config).then(function () {
                   router.push({
                     name: "Profile"
                   });
                 });
 
-              case 2:
+              case 12:
+                _context2.next = 22;
+                break;
+
+              case 14:
+                data.append('id', arr.value.id);
+                data.append('title', arr.value.title);
+                data.append('category', arr.value.category);
+                data.append('email', arr.value.email);
+                data.append('photo', arr.value.photo);
+                data.append('description', arr.value.description);
+                _context2.next = 22;
+                return axios.post("/api/updateUser", data, config).then(function () {
+                  router.push({
+                    name: "Profile"
+                  });
+                });
+
+              case 22:
               case "end":
                 return _context2.stop();
             }
@@ -19900,7 +19936,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2);
       }));
 
-      return function updateUser() {
+      return function updateUser(_x) {
         return _ref2.apply(this, arguments);
       };
     }();
@@ -19908,7 +19944,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       singleUser: singleUser,
       arr: arr,
-      updateUser: updateUser
+      updateUser: updateUser,
+      onChange: onChange,
+      file: file
     };
   }
 });
@@ -20657,12 +20695,15 @@ var _hoisted_12 = /*#__PURE__*/_withScopeId(function () {
 });
 
 var _hoisted_13 = {
+  "class": "form-img"
+};
+var _hoisted_14 = {
   "class": "form-description"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_router_link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("router-link");
 
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_router_link, {
     to: "/profile",
     "class": "btn btn-dark p-2"
   }, {
@@ -20690,9 +20731,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     placeholder: "Category"
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.arr.category]]), _hoisted_11, _hoisted_12]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"form-img\">\r\n            <label for=\"img\">Image &nbsp; : &nbsp;</label>\r\n            <input type=\"file\"  @change=\"previewFiles\" multiple /> <br />\r\n            <input type=\"hidden\" name=\"old_image\" >\r\n        </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.arr.category]]), _hoisted_11, _hoisted_12]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"form-img\">\r\n            <label for=\"img\">Image &nbsp; : &nbsp;</label>\r\n            <input type=\"file\"  @change=\"previewFiles\" multiple /> <br />\r\n            <input type=\"hidden\" name=\"old_image\" >\r\n        </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "file",
+    onChange: _cache[2] || (_cache[2] = function () {
+      return $setup.onChange && $setup.onChange.apply($setup, arguments);
+    })
+  }, null, 32
+  /* HYDRATE_EVENTS */
+  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     type: "text",
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $setup.arr.description = $event;
     }),
     id: "desc",
@@ -20703,20 +20751,18 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.arr.description]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "hidden",
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
+    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $setup.arr.id = $event;
     })
   }, null, 512
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.arr.id]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "submit",
-    onClick: _cache[4] || (_cache[4] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onClick: _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $setup.updateUser && $setup.updateUser.apply($setup, arguments);
     }, ["prevent"])),
     "class": "form-btn btn btn-primary"
-  }, "Update")])])])], 64
-  /* STABLE_FRAGMENT */
-  );
+  }, "Update")])])])]);
 }
 
 /***/ }),

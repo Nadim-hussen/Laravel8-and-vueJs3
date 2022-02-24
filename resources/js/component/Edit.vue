@@ -1,4 +1,5 @@
 <template>
+<div>
   <div class="d-flex justify-content-center mt-3">
       <router-link to="/profile" class="btn btn-dark p-2">Back Profile</router-link>
     </div>
@@ -27,6 +28,9 @@
             <input type="file"  @change="previewFiles" multiple /> <br />
             <input type="hidden" name="old_image" >
         </div> -->
+        <div class="form-img">
+            <input type="file" @change="onChange" />
+        </div>
         <div class="form-description">
 
             <textarea type="text" v-model="arr.description" id="desc" cols="40" rows="15" placeholder="Enter The description of your Post">
@@ -36,6 +40,7 @@
          <input type="hidden" v-model="arr.id">
         <button type="submit" @click.prevent="updateUser" class="form-btn btn btn-primary">Update</button>
     </form>
+     </div>
      </div>
      </div>
 </template>
@@ -48,6 +53,7 @@ export default {
     setup() {
         const router = useRouter();
     const { cookies } = useCookies();
+    let file = ref('')
     const route = useRoute();
     let arr = ref([])
         onMounted(() => {
@@ -63,23 +69,50 @@ export default {
      let response = await axios.get(`/api/singleUser/${route.params.id}`)
         arr.value = response.data;
     };
-    const updateUser = async () =>{
-         await axios.post(`/api/updateUser`,{
-             id: arr.value.id,
-              title: arr.value.title,
-            category: arr.value.category,
-            email: cookies.get("email"),
-            photo:'pic.png',
-            description: arr.value.description,
-        }).then(()=>{
+     const onChange = (e)=>{
+            file.value = e.target.files[0];
+        }
+    const updateUser = async (e) =>{
+        e.preventDefault();
+        const config ={
+                headers:{
+                    'content-type' : 'multipart/form-data'
+                }
+            }
+            let data = new FormData();
+
+      if(file.value !=''){
+          data.append('id',arr.value.id)
+             data.append('title',arr.value.title)
+             data.append('category',arr.value.category)
+             data.append('email',arr.value.email)
+             data.append('photo',file.value)
+             data.append('description',arr.value.description)
+         await axios.post(`/api/updateUser`,data,config).then(()=>{
             router.push({name:"Profile"})
         })
+      }else{
+          data.append('id',arr.value.id)
+             data.append('title',arr.value.title)
+             data.append('category',arr.value.category)
+             data.append('email',arr.value.email)
+             data.append('photo',arr.value.photo)
+             data.append('description',arr.value.description)
+        await axios.post(`/api/updateUser`,data,config).then(()=>{
+            router.push({name:"Profile"})
+        })
+      }
+
+
+
     }
 
     return{
         singleUser,
         arr,
-        updateUser
+        updateUser,
+        onChange,
+        file
 
     }
 
