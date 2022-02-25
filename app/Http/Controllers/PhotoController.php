@@ -21,28 +21,20 @@ class PhotoController extends Controller
             'title'=>'required',
             'description'=>'required',
             'category'=>'required',
-            'photo'=>'required'
+            'photo'=>'required|mimes:jpg,jpeg,png,csv,txt,xlx,pdf|max:2048'
         ]);
-        // if($request->photo){
-            // $file = $request->photo;
-            // $name = Image::make('public/uploads/', $request->photo)->resize(320, 240)->save('public/uploads/',$request->photo);
-        //  $name = time().'.'.explode('/',explode(':',substr($request->photo,0,strpos($request->photo,':')))[1])[1];
-        // \Image::make($request->photo)->save(public_path('img/public/').$request->photo);
-        // // //     $categoryImage = Image::make($full_path);
-        // // //     // $categoryImage = Image::make( $full_path )->resize(1600,479)->stream();
-            // $request->merge(['photo'=> $name ]);
-        // }
-        // if($request->photo){
-        //     $name = $request->file('photo');
-        //      $request->file('photo')->storeAs('img/public',$name);
-        // }
-        // if($request->photo){
-        //     $imageName = $request->photo;
-        //     $destinationPath = 'img/public';
-        //     $request->photo->move($destinationPath, $imageName);
-        // }
-
-        uploadimage::create($request->all());
+        // uploadimage::create($request->all());
+        $store = new uploadimage;
+        if($request->file()){
+            $file_name = time().'_'.$request->photo->getClientOriginalName();
+            $file_path = $request->file('photo')->storeAs('uploads',$file_name,'public');
+            $store->photo = time().'_'.$request->photo->getClientOriginalName();
+            $store->email = $request->email;
+            $store->title = $request->title;
+            $store->description = $request->description;
+            $store->category = $request->category;
+            $store->save();
+        }
 
 
         return response([
@@ -66,6 +58,9 @@ class PhotoController extends Controller
         return $data;
     }
     public function deleteUser($del){
+        $store =  uploadimage::where('id',$del)->first();
+        $path = public_path('storage/uploads/'.$store->photo);
+        @unlink($path);
         $data = uploadimage::where('id', $del)->delete();
         return $data;
     }
@@ -77,12 +72,29 @@ class PhotoController extends Controller
             'category'=>'required',
             'photo'=>'required'
         ]);
-        $data = uploadimage::find($request->id);
-        $data->title = $request->title;
-        $data->category = $request->category;
-        $data->email = $request->email;
-        $data->photo = $request->photo;
-        $data->description = $request->description;
-        $data->save();
+        $store =  uploadimage::where('id',$request->id)->first();
+        $path = public_path('storage/uploads/'.$store->photo);
+        if($request->file()){
+            if($store->photo == $request->photo){
+                $store->title = $request->title;
+                $store->category = $request->category;
+                $store->email = $request->email;
+                $store->description = $request->description;
+                $store->photo = $request->photo;
+                $store->save();
+            }else{
+                @unlink($path);
+                $file_name = time().'_'.$request->photo->getClientOriginalName();
+                $file_path = $request->file('photo')->storeAs('uploads',$file_name,'public');
+                $store->photo = time().'_'.$request->photo->getClientOriginalName();
+                $store->email = $request->email;
+                $store->title = $request->title;
+                $store->description = $request->description;
+                $store->category = $request->category;
+                $store->save();
+            }
+
+        }
+
     }
 }

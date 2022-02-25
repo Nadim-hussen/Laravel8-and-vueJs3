@@ -25,7 +25,27 @@
 
     </tr>
   </thead>
-   <template v-if="arr.length>0">
+  <template v-if="arr.length>0 && item">
+
+             <template v-for="item in arr" :key="item.id">
+
+       <tbody class="text-center">
+     <tr>
+      <td>{{item.id}}</td>
+      <td>{{item.title}}</td>
+      <td>{{item.category}}</td>
+      <!-- <button class="btn btn-dark" @click="details(item.id)">Details</button> -->
+       <router-link class="btn btn-dark p-2" :to="{ name: 'Details', params: {id: item.id} } ">Detail</router-link>
+      <!-- <td><a href="details.php?id=<?php echo $data['id'] ?>" class="btn p-1 bg-success">Details</a></td> -->
+     </tr>
+  </tbody>
+
+        </template>
+         <div class="d-flex justify-content-center my-3">
+             <button class="btn btn-dark p-2" @click="refresh">Refresh</button>
+           </div>
+         </template>
+   <template v-else-if="arr.length>0">
         <template v-for="item in arr" :key="item.id">
 
        <tbody class="text-center">
@@ -42,6 +62,7 @@
         </template>
 
          </template>
+
 
          <template v-else>
            <h3 class="text-center">No Data Exist In This Category</h3>
@@ -62,6 +83,7 @@ export default {
   setup() {
     let arr = ref([]);
     const category = ref('')
+    let item = ref('')
     const { cookies } = useCookies();
     const router = useRouter();
     onMounted(  () => {
@@ -83,17 +105,21 @@ export default {
        const getCompanies = async () => {
         let response = await axios.get('/api/getItems')
         arr.value = response.data
+        item.value = false
     }
     const refresh =()=>{
+      category.value = ''
       getCompanies();
     }
     const search = async ()=>{
       if(category.value != ''){
         let response = await axios.get(`/api/oneData/${category.value}`)
+         item.value = true
       arr.value = response.data
       console.log(category.value)
       }else{
         alert('fill the data')
+        item.value = false
       }
 
     }
@@ -102,7 +128,8 @@ export default {
        getCompanies,
        category,
        search,
-       refresh
+       refresh,
+       item
     };
   },
 };

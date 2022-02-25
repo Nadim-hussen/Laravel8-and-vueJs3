@@ -27,13 +27,11 @@
           <br />
         </div>
         <div class="form-img">
-          <!-- <label for="img">Image &nbsp; : &nbsp;</label>
-          <input type="file" v-on:change="onFileChange" id="img" placeholder="images" />
-          <br /> -->
-          <div>
-            <!-- <h2>Select an image</h2> -->
-            <input type="file" ref="arr.photo" @change="previewFiles" multiple />
-          </div>
+         <!-- <form enctype="multipart/form-data" @submit="submit"> -->
+            <input type="file" @change="onChange" />
+            <!-- <button type="submit"> submit</button> -->
+        <!-- </form> -->
+
         </div>
         <div class="form-description">
           <textarea
@@ -61,68 +59,47 @@
 import { onMounted } from "vue";
 import { useCookies } from "vue3-cookies";
 import { useRouter } from "vue-router";
-import { reactive } from "vue";
+import { reactive , ref} from "vue";
 export default {
   setup() {
     const { cookies } = useCookies();
+    const file = ref('')
     const router = useRouter();
     // const pic = ref(null);
     // const imageprevi = ref(null)
     const form = reactive({
       title: "",
       category: "",
-        image:'',
       description: "",
     });
-    //  const onFileChange=(e)=> {
-    //   var files = e.target.files || e.dataTransfer.files;
-    //   if (!files.length)
-    //     return;
-    //   createImage(files[0]);
-    // }
-    // const createImage = (file) => {
-    //    form.image = new Image();
-    //   var reader = new FileReader();
-    // //   var vm = this;
+     const onChange = (e)=>{
+            file.value = e.target.files[0];
+        }
 
-    //   reader.onload = (e) => {
-    //     form.image = e.target.result;
-    //   };
-    //   reader.readAsDataURL(file);
-    // }
-     const previewFiles =(event)=> {
-      form.image = event.target.files[0].name;
-      // let file = event.target.files[0];
-      // let reader = new FileReader();
-      // if(file['size']<2111775){
-      //   reader.onloadend= (file) =>{
-      //     form.image = reader.result;
-      //   }
-      //   reader.readAsDataURL(file);
-      //   reader.onload=e =>{
-      //     imageprevi=e.target.result
-      //   }
-      // }else{
-      //   alert('Files size is bigger than two 2 MB');
-      // }
-   }
-    const submit = async () => {
+    const submit = async (e) => {
+      e.preventDefault();
+        const config ={
+                headers:{
+                    'content-type' : 'multipart/form-data'
+                }
+            }
+              let data = new FormData();
+              data.append('title',form.title);
+              data.append('category', form.category);
+              data.append('email',cookies.get("email"));
+            data.append('photo',file.value);
+            data.append('description',form.description);
+
       if (
         (form.title != "" && form.category != "" && form.image != "",
         form.description != "")
       ) {
         await axios
-          .post("http://127.0.0.1:8000/api/submit", {
-            title: form.title,
-            category: form.category,
-            email: cookies.get("email"),
-            photo: form.image,
-            description: form.description,
-          })
+          .post("http://127.0.0.1:8000/api/submit", data,config)
           .then(() => {
             (form.title = ""),
               (form.category = ""),
-              (form.image = ""),
+              (file.value = ""),
               (form.description = "");
             router.push({
               name: "Profile",
@@ -147,10 +124,10 @@ export default {
     });
     return {
       submit,
-    //   onFileChange,
-    previewFiles,
-      form,
 
+      form,
+      onChange,
+      file,
     };
   },
 };
