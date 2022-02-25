@@ -1,4 +1,5 @@
 <template>
+<div>
 <div class="navbar">
         <span class="left">
                 <router-link class="router-reg" to="/home" exact>Home</router-link>
@@ -39,6 +40,7 @@
         </tbody>
       </template>
     </table>
+  </div>
   </div>
 </template>
 <script>
