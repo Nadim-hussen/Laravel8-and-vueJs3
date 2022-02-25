@@ -58,6 +58,9 @@ class PhotoController extends Controller
         return $data;
     }
     public function deleteUser($del){
+        $store =  uploadimage::where('id',$del)->first();
+        $path = public_path('storage/uploads/'.$store->photo);
+        @unlink($path);
         $data = uploadimage::where('id', $del)->delete();
         return $data;
     }
